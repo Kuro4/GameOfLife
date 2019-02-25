@@ -3,8 +3,29 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="350" Width="525">
+        Title="{Binding Title}"
+        Height="350"
+        Width="525">
     <Grid>
-        <ContentControl prism:RegionManager.RegionName="ContentRegion" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Menu>
+            <MenuItem Header="MenuItem">
+                <MenuItem Header="MenuItem"/>
+            </MenuItem>
+        </Menu>
+        <ContentControl x:Name="ContentPanel"
+                        Grid.Row="1"
+                        prism:RegionManager.RegionName="ContentRegion"/>
+        <Grid x:Name="ControlPanel"
+              Grid.Row="2">
+        </Grid>
+        <StatusBar Grid.Row="3">
+            <StatusBarItem Content="StatusBarItem" Height="23" VerticalAlignment="Top"/>
+        </StatusBar>
     </Grid>
 </Window>
