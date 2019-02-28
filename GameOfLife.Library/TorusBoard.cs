@@ -9,15 +9,19 @@ namespace GameOfLife
     /// </summary>
     public class TorusBoard : Board
     {
-        protected override IEnumerable<ICell> GetSurroundingCells(ICell targetCell)
+        public override IEnumerable<ICell> GetSurroundingCells(ICell targetCell)
         {
-            return this.cells.Where(cell =>
-            {
-                if (targetCell.IsSamePosition(cell)) return false;
-                var xDiff = Math.Abs(cell.X - targetCell.X);
-                var yDiff = Math.Abs(cell.Y - targetCell.Y);
-                return (xDiff <= 1 || xDiff == (this.ColumnCount - 1)) && (yDiff <= 1 || yDiff == (this.RowCount - 1));
-            });
+            var index = targetCell.X + (this.ColumnCount * targetCell.Y);
+            var col = this.ColumnCount - 1;
+            var row = this.RowCount - 1;
+            yield return 0 < targetCell.Y && 0 < targetCell.X ? this.cells[index - this.ColumnCount - 1] : this.cells.Last();
+            yield return 0 < targetCell.Y ? this.cells[index - this.ColumnCount] : this.cells[targetCell.X + this.ColumnCount * row];
+            yield return 0 < targetCell.Y && targetCell.X < col ? this.cells[index - this.ColumnCount + 1] : this.cells[this.ColumnCount * row];
+            yield return 0 < targetCell.X ? this.Cells[index - 1] : this.cells[index + col];
+            yield return targetCell.X < col ? this.Cells[index + 1] : this.cells[index - col];
+            yield return targetCell.Y < row && 0 < targetCell.X ? this.cells[index + this.ColumnCount - 1] : this.cells[col];
+            yield return targetCell.Y < row ? this.cells[index + this.ColumnCount] : this.cells[targetCell.X];
+            yield return targetCell.Y < row && targetCell.X < col ? this.cells[index + this.ColumnCount + 1] : this.cells.First();
         }
     }
 }

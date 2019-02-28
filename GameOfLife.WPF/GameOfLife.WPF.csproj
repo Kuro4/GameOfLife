@@ -106,6 +106,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GameOfLife.Core\GameOfLife.Core.csproj">
+      <Project>{91d732a8-04ca-4a68-a14b-28324bc6af41}</Project>
+      <Name>GameOfLife.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GameOfLife.Library\GameOfLife.Library.csproj">
       <Project>{11d5334b-cdca-450c-a9d0-9006a5c1efc8}</Project>
       <Name>GameOfLife.Library</Name>
@@ -114,6 +118,11 @@
       <Project>{5792bce6-6298-468b-8504-0a9c331ba03c}</Project>
       <Name>GameOfLife.WPF.BoardModule</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GameOfLife.WPF.Core\GameOfLife.WPF.Core.csproj">
+      <Project>{C6079BCD-141A-41DB-86D0-41DE98D87B41}</Project>
+      <Name>GameOfLife.WPF.Core</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

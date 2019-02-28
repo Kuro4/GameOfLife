@@ -3,15 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.106
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife.Library", "GameOfLife.Library\GameOfLife.Library.csproj", "{11D5334B-CDCA-450C-A9D0-9006A5C1EFC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameOfLife.Library", "GameOfLife.Library\GameOfLife.Library.csproj", "{11D5334B-CDCA-450C-A9D0-9006A5C1EFC8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife.WPF", "GameOfLife.WPF\GameOfLife.WPF.csproj", "{2467D340-EF1F-4A7C-94DC-6D999586AF17}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife.CUI", "GameOfLife.CUI\GameOfLife.CUI.csproj", "{A9523301-41CA-4823-A1BF-3887EB2BC105}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameOfLife.CUI", "GameOfLife.CUI\GameOfLife.CUI.csproj", "{A9523301-41CA-4823-A1BF-3887EB2BC105}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife.WPF.BoardModule", "GameOfLife.WPF.BoardModule\GameOfLife.WPF.BoardModule.csproj", "{5792BCE6-6298-468B-8504-0A9C331BA03C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WPF", "WPF", "{EF86DC4E-3A49-401D-B5A9-341988674FCF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife.WPF.Core", "GameOfLife.WPF.Core\GameOfLife.WPF.Core.csproj", "{C6079BCD-141A-41DB-86D0-41DE98D87B41}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife.Core", "GameOfLife.Core\GameOfLife.Core.csproj", "{91D732A8-04CA-4A68-A14B-28324BC6AF41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +39,14 @@ Global
 		{5792BCE6-6298-468B-8504-0A9C331BA03C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5792BCE6-6298-468B-8504-0A9C331BA03C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5792BCE6-6298-468B-8504-0A9C331BA03C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6079BCD-141A-41DB-86D0-41DE98D87B41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6079BCD-141A-41DB-86D0-41DE98D87B41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6079BCD-141A-41DB-86D0-41DE98D87B41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6079BCD-141A-41DB-86D0-41DE98D87B41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91D732A8-04CA-4A68-A14B-28324BC6AF41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91D732A8-04CA-4A68-A14B-28324BC6AF41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91D732A8-04CA-4A68-A14B-28324BC6AF41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91D732A8-04CA-4A68-A14B-28324BC6AF41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,6 +54,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{2467D340-EF1F-4A7C-94DC-6D999586AF17} = {EF86DC4E-3A49-401D-B5A9-341988674FCF}
 		{5792BCE6-6298-468B-8504-0A9C331BA03C} = {EF86DC4E-3A49-401D-B5A9-341988674FCF}
+		{C6079BCD-141A-41DB-86D0-41DE98D87B41} = {EF86DC4E-3A49-401D-B5A9-341988674FCF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BB1A1643-B931-41A9-8FC6-77892A375088}

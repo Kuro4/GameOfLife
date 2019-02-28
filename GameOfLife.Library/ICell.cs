@@ -2,7 +2,7 @@
 
 namespace GameOfLife
 {
-    public interface ICell : ILife
+    public interface ICell
     {
         /// <summary>
         /// X座標
@@ -12,6 +12,10 @@ namespace GameOfLife
         /// Y座標
         /// </summary>
         int Y { get; }
+        /// <summary>
+        /// 生きているか
+        /// </summary>
+        bool IsAlive { get; set; }
         /// <summary>
         /// 次の世代で生きているか
         /// </summary>

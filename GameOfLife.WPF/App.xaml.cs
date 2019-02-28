@@ -1,4 +1,5 @@
-﻿using GameOfLife.WPF.Views;
+﻿using GameOfLife.WPF.BoardModule;
+using GameOfLife.WPF.Views;
 using Prism.Ioc;
 using Prism.Modularity;
 using System.Windows;
@@ -18,6 +19,11 @@ namespace GameOfLife.WPF
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
 
+        }
+
+        protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
+        {
+            moduleCatalog.AddModule<BoardModule.BoardModule>();
         }
     }
 }

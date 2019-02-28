@@ -3,6 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:GameOfLife.WPF.ViewModels"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance {x:Type vm:MainWindowViewModel}}"
         Title="{Binding Title}"
         Height="350"
         Width="525">
@@ -18,14 +23,25 @@
                 <MenuItem Header="MenuItem"/>
             </MenuItem>
         </Menu>
+        <!--こいつのサイズを固定したほうが軽くなる-->
         <ContentControl x:Name="ContentPanel"
                         Grid.Row="1"
                         prism:RegionManager.RegionName="ContentRegion"/>
         <Grid x:Name="ControlPanel"
               Grid.Row="2">
+            <WrapPanel>
+                <TextBox Width="50" Text="{Binding Size.Value}"/>
+                <Button Content="初期化" Command="{Binding Initialize}"/>
+                <Button Content="ランダム" Margin="30,0,0,0" Command="{Binding Random}"/>
+                <Button Content="スタート" Margin="30,0,0,0" Command="{Binding Start}"/>
+                <Button Content="ストップ" Margin="30,0,0,0" Command="{Binding Stop}"/>
+                <Button Content="次へ" Margin="30,0,0,0" Command="{Binding Next}"/>
+                <Button Content="リセット" Margin="30,0,0,0" Command="{Binding Reset}"/>
+                <TextBox Text="{Binding TimeSpeed.Value}"/>
+            </WrapPanel>
         </Grid>
         <StatusBar Grid.Row="3">
-            <StatusBarItem Content="StatusBarItem" Height="23" VerticalAlignment="Top"/>
+            <TextBlock Text="{Binding Board.Generation, StringFormat=第{0}世代}"/>
         </StatusBar>
     </Grid>
 </Window>

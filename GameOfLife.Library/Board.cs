@@ -8,7 +8,7 @@ namespace GameOfLife
     /// <summary>
     /// ライフゲームの盤面
     /// </summary>
-    public class Board
+    public class Board : IBoard
     {
         /// <summary>
         /// 列数
@@ -31,14 +31,15 @@ namespace GameOfLife
         /// </summary>
         public IReadOnlyList<ICell> Cells { get; }
         /// <summary>
-        /// セルの生死状態を取得する
+        /// セルの生死状態を取得,設定する
         /// </summary>
         /// <param name="x">X座標</param>
         /// <param name="y">Y座標</param>
         /// <returns></returns>
-        public ILife this[int x, int y]
+        public bool this[int x, int y]
         {
-            get { return this.cells[x + (this.ColumnCount * y)]; }
+            get{ return this.cells[x + (this.ColumnCount * y)].IsAlive; }
+            set { this.cells[x + (this.ColumnCount * y)].IsAlive = value; }
         }
         /// <summary>
         /// <see cref="Board"/>のインスタンスを生成する
@@ -48,7 +49,7 @@ namespace GameOfLife
             this.Cells = this.cells.AsReadOnly();
         }
         /// <summary>
-        /// 盤の状態を初期化する
+        /// 盤を初期化する
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="columnCount">列数(0以下であれば1に矯正する)</param>
@@ -60,39 +61,39 @@ namespace GameOfLife
             this.RowCount = rowCount <= 0 ? 1 : rowCount;
             this.Generation = 0;
             this.cells.Clear();
-            for (int i = 0; i < this.ColumnCount; i++)
+            for (int i = 0; i < this.RowCount; i++)
             {
-                for (int j = 0; j < this.RowCount; j++)
+                for (int j = 0; j < this.ColumnCount; j++)
                 {
-                    this.cells.Add(generate(i, j));
+                    this.cells.Add(generate(j, i));
                 }
             }
         }
         /// <summary>
-        /// 盤の状態を初期化する
+        /// 盤を初期化する
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="size">行列数(-値であれば0に矯正する)</param>
+        /// <param name="size">行列数(0以下であれば1に矯正する)</param>
         /// <param name="generate">X,Y座標を引数に<typeparamref name="T"/>型のセルを生成するデリゲート</param>
-        public virtual void Initialize<T>(int size, Func<int, int, T> generate) where T : ICell
+        public void Initialize<T>(int size, Func<int, int, T> generate) where T : ICell
         {
             this.Initialize<T>(size, size, generate);
         }
-
         /// <summary>
         /// 各セルの生死をランダムに変化させる
         /// </summary>
         /// <param name="survivalRate">生存率(省略可)</param>
-        public void Random(int survivalRate = 50)
+        public virtual void Random(int survivalRate = 50)
         {
             if (!this.Cells.Any()) return;
             var random = new Random();
             this.cells.ForEach(cell => cell.IsAlive = random.Next(0, 100) < survivalRate);
+            this.Generation = 0;
         }
         /// <summary>
         /// 各セルの生死を反転させる
         /// </summary>
-        public void Reverse()
+        public virtual void Reverse()
         {
             if (!this.Cells.Any()) return;
             this.cells.ForEach(cell => cell.IsAlive = !cell.IsAlive);
@@ -100,11 +101,12 @@ namespace GameOfLife
         /// <summary>
         /// 次の世代へ進める
         /// </summary>
-        public void Next()
+        public virtual void Next()
         {
             if (!this.Cells.Any()) return;
-            this.cells.ForEach(cell => cell.Prediction(this.GetSurroundingCells(cell)));
-            this.cells.ForEach(cell => cell.Next());
+            var parallel = this.cells.AsParallel();
+            parallel.ForAll(cell => cell.Prediction(this.GetSurroundingCells(cell)));
+            parallel.ForAll(cell => cell.Next());
             this.Generation++;
         }
         /// <summary>
@@ -112,9 +114,36 @@ namespace GameOfLife
         /// </summary>
         /// <param name="targetCell"></param>
         /// <returns></returns>
-        protected virtual IEnumerable<ICell> GetSurroundingCells(ICell targetCell)
+        public virtual IEnumerable<ICell> GetSurroundingCells(ICell targetCell)
         {
-            return this.cells.Where(cell => !targetCell.IsSamePosition(cell) && (Math.Abs(cell.X - targetCell.X) <= 1 && Math.Abs(cell.Y - targetCell.Y) <= 1));
+            //軽量化のためWhereを使わないで実装
+            var index = targetCell.X + (this.ColumnCount * targetCell.Y);
+            var col = this.ColumnCount - 1;
+            var row = this.RowCount - 1;
+            //左上
+            if (0 < targetCell.Y && 0 < targetCell.X) yield return this.cells[index - this.ColumnCount - 1];
+            //上
+            if (0 < targetCell.Y) yield return this.cells[index - this.ColumnCount];
+            //右上
+            if (0 < targetCell.Y && targetCell.X < col) yield return this.cells[index - this.ColumnCount + 1];
+            //左
+            if (0 < targetCell.X) yield return this.Cells[index - 1];
+            //右
+            if (targetCell.X < col) yield return this.Cells[index + 1];
+            //左下
+            if (targetCell.Y < row && 0 < targetCell.X) yield return this.cells[index + this.ColumnCount - 1];
+            //下
+            if (targetCell.Y < row) yield return this.cells[index + this.ColumnCount];
+            //右下
+            if (targetCell.Y < row && targetCell.X < col) yield return this.cells[index + this.ColumnCount + 1];
+        }
+        /// <summary>
+        /// 盤の状態をリセットする
+        /// </summary>
+        public virtual void Reset()
+        {
+            this.cells.ForEach(cell => cell.IsAlive = false);
+            this.Generation = 0;
         }
         /// <summary>
         /// 盤の状態を文字列に出力する
