@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WPF", "WPF", "{EF86DC4E-3A4
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife.WPF.Core", "GameOfLife.WPF.Core\GameOfLife.WPF.Core.csproj", "{C6079BCD-141A-41DB-86D0-41DE98D87B41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife.Core", "GameOfLife.Core\GameOfLife.Core.csproj", "{91D732A8-04CA-4A68-A14B-28324BC6AF41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameOfLife.Core", "GameOfLife.Core\GameOfLife.Core.csproj", "{91D732A8-04CA-4A68-A14B-28324BC6AF41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

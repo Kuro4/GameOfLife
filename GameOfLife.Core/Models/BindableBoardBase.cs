@@ -111,11 +111,11 @@ namespace GameOfLife.Core.Models
         /// <summary>
         /// 周囲のセルを取得する
         /// </summary>
-        /// <param name="targetCell"></param>
+        /// <param name="cell"></param>
         /// <returns></returns>
-        public virtual IEnumerable<ICell> GetSurroundingCells(ICell targetCell)
+        public virtual IEnumerable<ICell> GetAdjacentCells(ICell cell)
         {
-            return this.Board.GetSurroundingCells(targetCell);
+            return this.Board.GetAdjacentCells(cell);
         }
         /// <summary>
         /// 盤の状態をリセットする
@@ -124,6 +124,17 @@ namespace GameOfLife.Core.Models
         {
             this.Board.Reset();
             this.RaisePropertyChanged(nameof(this.Generation));
+        }
+        /// <summary>
+        /// 盤の状態を文字列に出力する
+        /// </summary>
+        /// <param name="aliveChar">生存セルとして表示する文字</param>
+        /// <param name="deadChar">死滅セルとして表示する文字</param>
+        /// <param name="separator">セル間に挿入する文字列</param>
+        /// <returns></returns>
+        public string ToString(char aliveChar = '0', char deadChar = '-', string separator = " ")
+        {
+            return this.Board.ToString(aliveChar, deadChar, separator);
         }
         #region IBoardインターフェイス実装の隠蔽
         IReadOnlyList<ICell> IBoard.Cells => this.Board.Cells;

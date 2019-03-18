@@ -13,15 +13,15 @@ namespace GameOfLife
         /// <summary>
         /// 列数
         /// </summary>
-        public int ColumnCount { get; private set; }
+        public int ColumnCount { get; protected set; }
         /// <summary>
         /// 行数
         /// </summary>
-        public int RowCount { get; private set; }
+        public int RowCount { get; protected set; }
         /// <summary>
         /// 世代
         /// </summary>
-        public int Generation { get; private set; }
+        public int Generation { get; protected set; }
         /// <summary>
         /// セル
         /// </summary>
@@ -38,8 +38,16 @@ namespace GameOfLife
         /// <returns></returns>
         public bool this[int x, int y]
         {
-            get{ return this.cells[x + (this.ColumnCount * y)].IsAlive; }
-            set { this.cells[x + (this.ColumnCount * y)].IsAlive = value; }
+            get
+            {
+                if (x < 0 || this.ColumnCount <= x || y < 0 || this.RowCount <= y) throw new IndexOutOfRangeException();
+                return this.cells[x + (this.ColumnCount * y)].IsAlive;
+            }
+            set
+            {
+                if (x < 0 || this.ColumnCount <= x || y < 0 || this.RowCount <= y) throw new IndexOutOfRangeException();
+                this.cells[x + (this.ColumnCount * y)].IsAlive = value;
+            }
         }
         /// <summary>
         /// <see cref="Board"/>のインスタンスを生成する
@@ -105,37 +113,37 @@ namespace GameOfLife
         {
             if (!this.Cells.Any()) return;
             var parallel = this.cells.AsParallel();
-            parallel.ForAll(cell => cell.Prediction(this.GetSurroundingCells(cell)));
+            parallel.ForAll(cell => cell.Prediction(this.GetAdjacentCells(cell)));
             parallel.ForAll(cell => cell.Next());
             this.Generation++;
         }
         /// <summary>
         /// 周囲のセルを取得する
         /// </summary>
-        /// <param name="targetCell"></param>
+        /// <param name="cell"></param>
         /// <returns></returns>
-        public virtual IEnumerable<ICell> GetSurroundingCells(ICell targetCell)
+        public virtual IEnumerable<ICell> GetAdjacentCells(ICell cell)
         {
             //軽量化のためWhereを使わないで実装
-            var index = targetCell.X + (this.ColumnCount * targetCell.Y);
+            var index = cell.X + (this.ColumnCount * cell.Y);
             var col = this.ColumnCount - 1;
             var row = this.RowCount - 1;
             //左上
-            if (0 < targetCell.Y && 0 < targetCell.X) yield return this.cells[index - this.ColumnCount - 1];
+            if (0 < cell.Y && 0 < cell.X) yield return this.cells[index - this.ColumnCount - 1];
             //上
-            if (0 < targetCell.Y) yield return this.cells[index - this.ColumnCount];
+            if (0 < cell.Y) yield return this.cells[index - this.ColumnCount];
             //右上
-            if (0 < targetCell.Y && targetCell.X < col) yield return this.cells[index - this.ColumnCount + 1];
+            if (0 < cell.Y && cell.X < col) yield return this.cells[index - this.ColumnCount + 1];
             //左
-            if (0 < targetCell.X) yield return this.Cells[index - 1];
+            if (0 < cell.X) yield return this.Cells[index - 1];
             //右
-            if (targetCell.X < col) yield return this.Cells[index + 1];
+            if (cell.X < col) yield return this.Cells[index + 1];
             //左下
-            if (targetCell.Y < row && 0 < targetCell.X) yield return this.cells[index + this.ColumnCount - 1];
+            if (cell.Y < row && 0 < cell.X) yield return this.cells[index + this.ColumnCount - 1];
             //下
-            if (targetCell.Y < row) yield return this.cells[index + this.ColumnCount];
+            if (cell.Y < row) yield return this.cells[index + this.ColumnCount];
             //右下
-            if (targetCell.Y < row && targetCell.X < col) yield return this.cells[index + this.ColumnCount + 1];
+            if (cell.Y < row && cell.X < col) yield return this.cells[index + this.ColumnCount + 1];
         }
         /// <summary>
         /// 盤の状態をリセットする

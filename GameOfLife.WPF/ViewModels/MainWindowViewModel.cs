@@ -29,7 +29,7 @@ namespace GameOfLife.WPF.ViewModels
         public ReactiveCommand Next { get; private set; } = new ReactiveCommand();
         public ReactiveCommand Reset { get; private set; } = new ReactiveCommand();
 
-        public IBindableBoard Board { get; private set; }
+        public BindableTorusableBoard Board { get; private set; }
 
         private readonly IEventAggregator eventAggregator;
 
@@ -37,7 +37,7 @@ namespace GameOfLife.WPF.ViewModels
         {
             this.eventAggregator = eventAggregator;
 
-            this.Board = new BindableTorusBoard();
+            this.Board = new BindableTorusableBoard(true);
 
             //実行条件
             this.Initialize = this.IsTimeFlowing.Select(x => !x).ToReactiveCommand();
@@ -60,10 +60,10 @@ namespace GameOfLife.WPF.ViewModels
                 {
                     cell.IsAlive = true;
                 }
-                foreach (var cell in this.Board.Cells.Where(x => x.X == (int)this.Board.ColumnCount / 2))
-                {
-                    cell.IsAlive = true;
-                }
+                //foreach (var cell in this.Board.Cells.Where(x => x.X == (int)this.Board.ColumnCount / 2))
+                //{
+                //    cell.IsAlive = true;
+                //}
             });
             this.Random.Subscribe(() => this.Board.Random(20));
             this.Start.Subscribe(async () =>

@@ -27,3 +27,4 @@ namespace GameOfLife.WPF
         }
     }
 }
+//TODO:OpenTKを導入して爆速の実装を目指す

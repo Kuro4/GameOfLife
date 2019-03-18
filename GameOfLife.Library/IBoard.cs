@@ -60,12 +60,20 @@ namespace GameOfLife
         /// <summary>
         /// 周囲のセルを取得する
         /// </summary>
-        /// <param name="targetCell"></param>
+        /// <param name="cell"></param>
         /// <returns></returns>
-        IEnumerable<ICell> GetSurroundingCells(ICell targetCell);
+        IEnumerable<ICell> GetAdjacentCells(ICell cell);
         /// <summary>
         /// 盤の状態をリセットする
         /// </summary>
         void Reset();
+        /// <summary>
+        /// 盤の状態を文字列に出力する
+        /// </summary>
+        /// <param name="aliveChar">生存セルとして表示する文字</param>
+        /// <param name="deadChar">死滅セルとして表示する文字</param>
+        /// <param name="separator">セル間に挿入する文字列</param>
+        /// <returns></returns>
+        string ToString(char aliveChar, char deadChar, string separator);
     }
 }

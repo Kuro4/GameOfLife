@@ -1,5 +1,4 @@
-﻿<UserControl
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:model="clr-namespace:GameOfLife.Core.Models;assembly=GameOfLife.Core"
@@ -7,9 +6,8 @@
              xmlns:local="clr-namespace:GameOfLife.WPF.BoardModule.Views"
              x:Class="GameOfLife.WPF.BoardModule.Views.Board"
              prism:ViewModelLocator.AutoWireViewModel="True"
-             Background="#FFFFD0D0">
-    <ItemsControl ItemsSource="{Binding Cells.Value}"
-                  VirtualizingPanel.IsVirtualizing="True">
+             IsEnabled="False">
+    <ItemsControl ItemsSource="{Binding Cells.Value}">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                 <UniformGrid Columns="{Binding ColumnCount.Value, Mode=OneWay}"
@@ -18,20 +16,9 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
             <DataTemplate DataType="{x:Type model:BindableCell}">
-                <Border AllowDrop="True" Focusable="True" >
-                    <!--<i:Interaction.Triggers>
-                        <i:EventTrigger EventName="MouseDown">
-                            <i:InvokeCommandAction Command="{Binding DataContext.MouseDown, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Board}}}" CommandParameter="{Binding}"/>
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="MouseUp">
-                            <i:InvokeCommandAction Command="{Binding DataContext.MouseUp, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Board}}}"/>
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="MouseMove">
-                            <i:InvokeCommandAction Command="{Binding DataContext.Reverse, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Board}}}" CommandParameter="{Binding}"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>-->
-                    <Border.Style>
-                        <Style TargetType="{x:Type Border}">
+                <Canvas>
+                    <Canvas.Style>
+                        <Style TargetType="{x:Type Canvas}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsAlive}" Value="true">
                                     <Setter Property="Background" Value="White"/>
@@ -41,8 +28,8 @@
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </Border.Style>
-                </Border>
+                    </Canvas.Style>
+                </Canvas>
             </DataTemplate>
         </ItemsControl.ItemTemplate>
     </ItemsControl>

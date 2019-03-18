@@ -33,7 +33,7 @@ namespace GameOfLife.Core.Models
             set
             {
                 this.cell.IsAlive = value;
-                SetProperty(ref _isAlive, value);
+                this.SetProperty(ref this._isAlive, value);
             }
         }
         /// <summary>
