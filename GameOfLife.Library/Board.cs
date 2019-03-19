@@ -31,6 +31,18 @@ namespace GameOfLife
         /// </summary>
         public IReadOnlyList<ICell> Cells { get; }
         /// <summary>
+        /// 初期化完了時に発火するイベント
+        /// </summary>
+        public event EventHandler Initialized;
+        /// <summary>
+        /// いずれかのセルの生死が変化した時に発火するイベント
+        /// </summary>
+        public event EventHandler CellLifeChanged;
+        /// <summary>
+        /// 次の世代へ進んだ際に発火するイベント
+        /// </summary>
+        public event EventHandler NextRise;
+        /// <summary>
         /// セルの生死状態を取得,設定する
         /// </summary>
         /// <param name="x">X座標</param>
@@ -46,7 +58,10 @@ namespace GameOfLife
             set
             {
                 if (x < 0 || this.ColumnCount <= x || y < 0 || this.RowCount <= y) throw new IndexOutOfRangeException();
-                this.cells[x + (this.ColumnCount * y)].IsAlive = value;
+                if (this.cells[x + (this.ColumnCount * y)].IsAlive != value)
+                {
+                    this.cells[x + (this.ColumnCount * y)].IsAlive = value;
+                }
             }
         }
         /// <summary>
@@ -76,6 +91,7 @@ namespace GameOfLife
                     this.cells.Add(generate(j, i));
                 }
             }
+            this.OnInitialized(EventArgs.Empty);
         }
         /// <summary>
         /// 盤を初期化する
@@ -97,6 +113,7 @@ namespace GameOfLife
             var random = new Random();
             this.cells.ForEach(cell => cell.IsAlive = random.Next(0, 100) < survivalRate);
             this.Generation = 0;
+            this.OnCellLifeChanged(EventArgs.Empty);
         }
         /// <summary>
         /// 各セルの生死を反転させる
@@ -105,6 +122,7 @@ namespace GameOfLife
         {
             if (!this.Cells.Any()) return;
             this.cells.ForEach(cell => cell.IsAlive = !cell.IsAlive);
+            this.OnCellLifeChanged(EventArgs.Empty);
         }
         /// <summary>
         /// 次の世代へ進める
@@ -116,6 +134,7 @@ namespace GameOfLife
             parallel.ForAll(cell => cell.Prediction(this.GetAdjacentCells(cell)));
             parallel.ForAll(cell => cell.Next());
             this.Generation++;
+            this.OnNextRaise(EventArgs.Empty);
         }
         /// <summary>
         /// 周囲のセルを取得する
@@ -146,12 +165,22 @@ namespace GameOfLife
             if (cell.Y < row && cell.X < col) yield return this.cells[index + this.ColumnCount + 1];
         }
         /// <summary>
+        /// 盤を編集する
+        /// </summary>
+        /// <param name="editAction"></param>
+        public virtual void Edit(Action editAction)
+        {
+            editAction();
+            this.OnCellLifeChanged(EventArgs.Empty);
+        }
+        /// <summary>
         /// 盤の状態をリセットする
         /// </summary>
         public virtual void Reset()
         {
             this.cells.ForEach(cell => cell.IsAlive = false);
             this.Generation = 0;
+            this.OnCellLifeChanged(EventArgs.Empty);
         }
         /// <summary>
         /// 盤の状態を文字列に出力する
@@ -170,6 +199,30 @@ namespace GameOfLife
                 builder.AppendLine(string.Join(separator, conv.Skip(i * this.ColumnCount).Take(this.ColumnCount)));
             }
             return builder.ToString();
+        }
+        /// <summary>
+        /// <see cref="Initialized"/>イベントを発火する
+        /// </summary>
+        /// <param name="e"></param>
+        protected virtual void OnInitialized(EventArgs e)
+        {
+            this.Initialized?.Invoke(this, e);
+        }
+        /// <summary>
+        /// <see cref="CellLifeChanged"/>イベントを発火する
+        /// </summary>
+        /// <param name="e"></param>
+        protected virtual void OnCellLifeChanged(EventArgs e)
+        {
+            this.CellLifeChanged?.Invoke(this, e);
+        }
+        /// <summary>
+        /// <see cref="NextRise"/>イベントを発火する
+        /// </summary>
+        /// <param name="e"></param>
+        protected virtual void OnNextRaise(EventArgs e)
+        {
+            this.NextRise?.Invoke(this, e);
         }
     }
 }

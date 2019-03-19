@@ -94,6 +94,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="OpenTK">
+      <Version>3.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="OpenTK.GLControl">
+      <Version>3.0.1</Version>
+    </PackageReference>
     <PackageReference Include="Prism.Core">
       <Version>7.1.0.431</Version>
     </PackageReference>
@@ -117,6 +123,10 @@
     <ProjectReference Include="..\GameOfLife.WPF.BoardModule\GameOfLife.WPF.BoardModule.csproj">
       <Project>{5792bce6-6298-468b-8504-0a9c331ba03c}</Project>
       <Name>GameOfLife.WPF.BoardModule</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GameOfLife.WPF.Controls\GameOfLife.WPF.Controls.csproj">
+      <Project>{f1ea48f2-ae93-46fa-a2e7-bd81311eda4f}</Project>
+      <Name>GameOfLife.WPF.Controls</Name>
     </ProjectReference>
     <ProjectReference Include="..\GameOfLife.WPF.Core\GameOfLife.WPF.Core.csproj">
       <Project>{C6079BCD-141A-41DB-86D0-41DE98D87B41}</Project>

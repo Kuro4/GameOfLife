@@ -1,0 +1,8 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:GameOfLife.WPF.Controls">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/GameOfLife.WPF.Controls;component/GLBoard.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

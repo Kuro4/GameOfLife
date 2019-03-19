@@ -21,7 +21,7 @@ namespace GameOfLife.WPF.ViewModels
 
         public ReactiveProperty<int> Size { get; private set; } = new ReactiveProperty<int>(10);
         public ReactiveProperty<bool> IsTimeFlowing { get; private set; } = new ReactiveProperty<bool>(false);
-        public ReactiveProperty<int> TimeSpeed { get; private set; } = new ReactiveProperty<int>(50);
+        public ReactiveProperty<int> FPS { get; private set; } = new ReactiveProperty<int>(60);
         public ReactiveCommand Initialize { get; private set; } = new ReactiveCommand();
         public ReactiveCommand Random { get; private set; } = new ReactiveCommand();
         public ReactiveCommand Start { get; private set; } = new ReactiveCommand();
@@ -49,21 +49,16 @@ namespace GameOfLife.WPF.ViewModels
             this.Initialize.Subscribe(() =>
             {
                 this.Board.Initialize(this.Size.Value, (x, y) => new BindableCell(x, y));
-                this.eventAggregator.GetEvent<BoardInitializedEvent>().Publish(new BoradInfo()
-                {
-                    ColumnCount = this.Board.ColumnCount,
-                    RowCount = this.Board.RowCount,
-                    Cells = this.Board.Cells,
-                });
                 //DEBUG
-                foreach (var cell in this.Board.Cells.Where(x => x.Y == (int)this.Board.RowCount / 2))
+                this.Board.Edit(() =>
                 {
-                    cell.IsAlive = true;
-                }
-                //foreach (var cell in this.Board.Cells.Where(x => x.X == (int)this.Board.ColumnCount / 2))
-                //{
-                //    cell.IsAlive = true;
-                //}
+                    var row = this.Board.RowCount / 2;
+                    foreach (var cell in this.Board.Cells.Where(x => x.Y == row))
+                    {
+                        cell.IsAlive = true;
+                    }
+                });
+                this.eventAggregator.GetEvent<BoardInitializedEvent>().Publish(this.Board);
             });
             this.Random.Subscribe(() => this.Board.Random(20));
             this.Start.Subscribe(async () =>
@@ -72,7 +67,7 @@ namespace GameOfLife.WPF.ViewModels
                 while (this.IsTimeFlowing.Value)
                 {
                     this.Board.Next();
-                    await Task.Delay(this.TimeSpeed.Value);
+                    await Task.Delay(System.TimeSpan.FromMilliseconds(1000 / this.FPS.Value));
                 }
             });
             this.Stop.Subscribe(() => this.IsTimeFlowing.Value = false);

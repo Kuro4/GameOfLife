@@ -37,7 +37,7 @@
                 <Button Content="ストップ" Margin="30,0,0,0" Command="{Binding Stop}"/>
                 <Button Content="次へ" Margin="30,0,0,0" Command="{Binding Next}"/>
                 <Button Content="リセット" Margin="30,0,0,0" Command="{Binding Reset}"/>
-                <TextBox Text="{Binding TimeSpeed.Value}"/>
+                <TextBox Text="{Binding FPS.Value}"/>
             </WrapPanel>
         </Grid>
         <StatusBar Grid.Row="3">

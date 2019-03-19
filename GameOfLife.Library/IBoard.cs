@@ -23,6 +23,18 @@ namespace GameOfLife
         /// </summary>
         IReadOnlyList<ICell> Cells { get; }
         /// <summary>
+        /// 初期化完了時に発火するイベント
+        /// </summary>
+        event EventHandler Initialized;
+        /// <summary>
+        /// いずれかのセルの生死が変化した時に発火するイベント
+        /// </summary>
+        event EventHandler CellLifeChanged;
+        /// <summary>
+        /// 次の世代へ進んだ際に発火するイベント
+        /// </summary>
+        event EventHandler NextRise;
+        /// <summary>
         /// セルの生死状態を取得,設定する
         /// </summary>
         /// <param name="x"></param>
@@ -63,6 +75,11 @@ namespace GameOfLife
         /// <param name="cell"></param>
         /// <returns></returns>
         IEnumerable<ICell> GetAdjacentCells(ICell cell);
+        /// <summary>
+        /// 盤を編集する
+        /// </summary>
+        /// <param name="editAction"></param>
+        void Edit(Action editAction);
         /// <summary>
         /// 盤の状態をリセットする
         /// </summary>

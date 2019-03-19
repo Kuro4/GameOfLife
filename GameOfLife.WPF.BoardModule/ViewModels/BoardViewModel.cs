@@ -29,11 +29,11 @@ namespace GameOfLife.WPF.BoardModule.ViewModels
             this.ColumnCount = this.columnCount.ToReadOnlyReactiveProperty();
             this.RowCount = this.rowCount.ToReadOnlyReactiveProperty();
 
-            this.eventAggregator.GetEvent<BoardInitializedEvent>().Subscribe(info =>
+            this.eventAggregator.GetEvent<BoardInitializedEvent>().Subscribe(board =>
             {
-                this.columnCount.Value = info.ColumnCount;
-                this.rowCount.Value = info.RowCount;
-                this.Cells.Value = info.Cells;
+                this.columnCount.Value = board.ColumnCount;
+                this.rowCount.Value = board.RowCount;
+                this.Cells.Value = board.Cells;
             },ThreadOption.PublisherThread);
         }
     }

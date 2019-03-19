@@ -1,4 +1,5 @@
-﻿using Prism.Events;
+﻿using GameOfLife.Core.Models;
+using Prism.Events;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GameOfLife.WPF.Core.EventAggregators
 {
-    public class BoardInitializedEvent : PubSubEvent<BoradInfo>
+    public class BoardInitializedEvent : PubSubEvent<IBindableBoard>
     {
     }
 }

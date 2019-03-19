@@ -19,7 +19,9 @@ namespace GameOfLife.WPF.BoardModule
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterForNavigation<Views.Board>();
-            this.RegionManager.RequestNavigate("ContentRegion", nameof(Views.Board));
+            containerRegistry.RegisterForNavigation<Views.GPUBoard>();
+            //this.RegionManager.RequestNavigate("ContentRegion", nameof(Views.Board));
+            this.RegionManager.RequestNavigate("ContentRegion", nameof(Views.GPUBoard));
         }
     }
 }

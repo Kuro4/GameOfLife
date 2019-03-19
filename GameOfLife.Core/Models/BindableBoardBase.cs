@@ -11,6 +11,9 @@ namespace GameOfLife.Core.Models
     /// </summary>
     public abstract class BindableBoardBase<Type> : BindableBase, IBindableBoard where Type : IBoard 
     {
+        /// <summary>
+        /// ラップする<see cref="IBoard"/>
+        /// </summary>
         protected virtual Type Board { get; set; }
         /// <summary>
         /// 列数
@@ -33,6 +36,18 @@ namespace GameOfLife.Core.Models
         /// </summary>
         public ReadOnlyObservableCollection<IBindableCell> Cells { get; private set; }
         /// <summary>
+        /// 初期化完了時に発火するイベント
+        /// </summary>
+        public event EventHandler Initialized;
+        /// <summary>
+        /// いずれかのセルの生死が変化した時に発火するイベント
+        /// </summary>
+        public event EventHandler CellLifeChanged;
+        /// <summary>
+        /// 次の世代へ進んだ際に発火するイベント
+        /// </summary>
+        public event EventHandler NextRise;
+        /// <summary>
         /// セルの生死状態を取得,設定する
         /// </summary>
         /// <param name="x">X座標</param>
@@ -41,7 +56,13 @@ namespace GameOfLife.Core.Models
         public virtual bool this[int x, int y]
         {
             get => this.Board[x, y];
-            set => this.Board[x, y] = value;
+            set
+            {
+                if(this.Board[x,y] != value)
+                {
+                    this.Board[x, y] = value;
+                }
+            }
         }
         /// <summary>
         /// <see cref="BindableBoardBase{Type}"/>のインスタンスを生成する
@@ -73,6 +94,16 @@ namespace GameOfLife.Core.Models
                 this.cells.Add(cell);
             }
             this.RaisePropertyChanged(nameof(this.Generation));
+            this.OnInitialized(EventArgs.Empty);
+        }
+        /// <summary>
+        /// 盤を編集する
+        /// </summary>
+        /// <param name="editAction"></param>
+        public virtual void Edit(Action editAction)
+        {
+            this.Board.Edit(editAction);
+            this.OnCellLifeChanged(EventArgs.Empty);
         }
         /// <summary>
         /// 盤を初期化する
@@ -92,6 +123,7 @@ namespace GameOfLife.Core.Models
         {
             this.Board.Random(survivalRate);
             this.RaisePropertyChanged(nameof(this.Generation));
+            this.OnCellLifeChanged(EventArgs.Empty);
         }
         /// <summary>
         /// 各セルの生死を反転させる
@@ -107,6 +139,7 @@ namespace GameOfLife.Core.Models
         {
             this.Board.Next();
             this.RaisePropertyChanged(nameof(this.Generation));
+            this.OnNextRaise(EventArgs.Empty);
         }
         /// <summary>
         /// 周囲のセルを取得する
@@ -124,6 +157,7 @@ namespace GameOfLife.Core.Models
         {
             this.Board.Reset();
             this.RaisePropertyChanged(nameof(this.Generation));
+            this.OnCellLifeChanged(EventArgs.Empty);
         }
         /// <summary>
         /// 盤の状態を文字列に出力する
@@ -135,6 +169,30 @@ namespace GameOfLife.Core.Models
         public string ToString(char aliveChar = '0', char deadChar = '-', string separator = " ")
         {
             return this.Board.ToString(aliveChar, deadChar, separator);
+        }
+        /// <summary>
+        /// <see cref="Initialized"/>イベントを発火する
+        /// </summary>
+        /// <param name="e"></param>
+        protected virtual void OnInitialized(EventArgs e)
+        {
+            this.Initialized?.Invoke(this, e);
+        }
+        /// <summary>
+        /// <see cref="CellLifeChanged"/>イベントを発火する
+        /// </summary>
+        /// <param name="e"></param>
+        protected virtual void OnCellLifeChanged(EventArgs e)
+        {
+            this.CellLifeChanged?.Invoke(this, e);
+        }
+        /// <summary>
+        /// <see cref="NextRise"/>イベントを発火する
+        /// </summary>
+        /// <param name="e"></param>
+        protected virtual void OnNextRaise(EventArgs e)
+        {
+            this.NextRise?.Invoke(this, e);
         }
         #region IBoardインターフェイス実装の隠蔽
         IReadOnlyList<ICell> IBoard.Cells => this.Board.Cells;
