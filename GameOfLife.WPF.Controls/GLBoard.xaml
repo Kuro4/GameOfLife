@@ -1,0 +1,21 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:GameOfLife.WPF.Controls"
+                    xmlns:openTK="clr-namespace:OpenTK;assembly=OpenTK.GLControl">
+    <Style TargetType="{x:Type local:GLBoard}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:GLBoard}">
+                    <Border
+                        Background="{x:Null}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                        <WindowsFormsHost x:Name="PART_Host">
+                            <openTK:GLControl x:Name="PART_GLControl"/>
+                        </WindowsFormsHost>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

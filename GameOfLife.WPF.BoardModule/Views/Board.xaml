@@ -1,0 +1,36 @@
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"
+             xmlns:model="clr-namespace:GameOfLife.Core.Models;assembly=GameOfLife.Core"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:local="clr-namespace:GameOfLife.WPF.BoardModule.Views"
+             x:Class="GameOfLife.WPF.BoardModule.Views.Board"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             IsEnabled="False">
+    <ItemsControl ItemsSource="{Binding Cells.Value}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <UniformGrid Columns="{Binding ColumnCount.Value, Mode=OneWay}"
+                             Rows="{Binding RowCount.Value, Mode=OneWay}"/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="{x:Type model:BindableCell}">
+                <Canvas>
+                    <Canvas.Style>
+                        <Style TargetType="{x:Type Canvas}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAlive}" Value="true">
+                                    <Setter Property="Background" Value="White"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsAlive}" Value="false">
+                                    <Setter Property="Background" Value="Black"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Canvas.Style>
+                </Canvas>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>

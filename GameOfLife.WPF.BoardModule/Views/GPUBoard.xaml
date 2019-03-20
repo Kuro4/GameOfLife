@@ -1,0 +1,8 @@
+﻿<UserControl x:Class="GameOfLife.WPF.BoardModule.Views.GPUBoard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             xmlns:controls="clr-namespace:GameOfLife.WPF.Controls;assembly=GameOfLife.WPF.Controls">
+    <controls:GLBoard Board="{Binding Board.Value}"/>
+</UserControl>

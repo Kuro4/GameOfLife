@@ -9,7 +9,7 @@ namespace GameOfLife.CUI
         static void Main(string[] args)
         {
             //var board = new Board();
-            var board = new TorusBoard();
+            var board = new TorusableBoard();
             int count = 10;
             int survivalRate = 20;
             bool isContinue = true;

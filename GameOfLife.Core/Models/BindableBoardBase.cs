@@ -1,35 +1,40 @@
-﻿using System;
+﻿using Prism.Mvvm;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 
-namespace GameOfLife
+namespace GameOfLife.Core.Models
 {
     /// <summary>
-    /// ライフゲームの盤面
+    /// <see cref="INotifyPropertyChanged"/>を実装した<see cref="IBoard"/>のラッパークラスのベース
     /// </summary>
-    public class Board : IBoard
+    public abstract class BindableBoardBase<Type> : BindableBase, IBindableBoard where Type : IBoard 
     {
+        /// <summary>
+        /// ラップする<see cref="IBoard"/>
+        /// </summary>
+        protected virtual Type Board { get; set; }
         /// <summary>
         /// 列数
         /// </summary>
-        public int ColumnCount { get; protected set; }
+        public int ColumnCount => this.Board.ColumnCount;
         /// <summary>
         /// 行数
         /// </summary>
-        public int RowCount { get; protected set; }
+        public int RowCount => this.Board.RowCount;
         /// <summary>
         /// 世代
         /// </summary>
-        public int Generation { get; protected set; }
+        public int Generation => this.Board.Generation;
         /// <summary>
         /// セル
         /// </summary>
-        protected readonly List<ICell> cells = new List<ICell>();
+        private readonly ObservableCollection<IBindableCell> cells = new ObservableCollection<IBindableCell>();
         /// <summary>
         /// セル(読取専用)
         /// </summary>
-        public IReadOnlyList<ICell> Cells { get; }
+        public ReadOnlyObservableCollection<IBindableCell> Cells { get; private set; }
         /// <summary>
         /// 初期化完了時に発火するイベント
         /// </summary>
@@ -48,29 +53,30 @@ namespace GameOfLife
         /// <param name="x">X座標</param>
         /// <param name="y">Y座標</param>
         /// <returns></returns>
-        public bool this[int x, int y]
+        public virtual bool this[int x, int y]
         {
-            get
-            {
-                if (x < 0 || this.ColumnCount <= x || y < 0 || this.RowCount <= y) throw new IndexOutOfRangeException();
-                return this.cells[x + (this.ColumnCount * y)].IsAlive;
-            }
+            get => this.Board[x, y];
             set
             {
-                if (x < 0 || this.ColumnCount <= x || y < 0 || this.RowCount <= y) throw new IndexOutOfRangeException();
-                if (this.cells[x + (this.ColumnCount * y)].IsAlive != value)
+                if(this.Board[x,y] != value)
                 {
-                    this.cells[x + (this.ColumnCount * y)].IsAlive = value;
+                    this.Board[x, y] = value;
                 }
             }
         }
         /// <summary>
-        /// <see cref="Board"/>のインスタンスを生成する
+        /// <see cref="BindableBoardBase{Type}"/>のインスタンスを生成する
         /// </summary>
-        public Board()
+        public BindableBoardBase()
         {
-            this.Cells = this.cells.AsReadOnly();
+            this.Cells = new ReadOnlyObservableCollection<IBindableCell>(this.cells);
+            this.Board = this.CreateBoard();
         }
+        /// <summary>
+        /// <see cref="Type"/>型のインスタンスを生成する(このメソッドはコンストラクタで呼ばれ、<see cref="Board"/>プロパティにセットされる)
+        /// </summary>
+        /// <returns></returns>
+        protected abstract Type CreateBoard();
         /// <summary>
         /// 盤を初期化する
         /// </summary>
@@ -78,20 +84,26 @@ namespace GameOfLife
         /// <param name="columnCount">列数(0以下であれば1に矯正する)</param>
         /// <param name="rowCount">行数(0以下であれば1に矯正する)</param>
         /// <param name="generate">X,Y座標を引数に<typeparamref name="T"/>型のセルを生成するデリゲート</param>
-        public virtual void Initialize<T>(int columnCount, int rowCount, Func<int, int, T> generate) where T : ICell
+        public virtual void Initialize<T>(int columnCount, int rowCount, Func<int, int, T> generate) where T : IBindableCell
         {
-            this.ColumnCount = columnCount <= 0 ? 1 : columnCount;
-            this.RowCount = rowCount <= 0 ? 1 : rowCount;
-            this.Generation = 0;
+            this.Board.Initialize(columnCount, rowCount, generate);
+            //this.cellsにはboard.cellsと同一のインスタンスを入れる為、this.boardの直接操作だけでOK
             this.cells.Clear();
-            for (int i = 0; i < this.RowCount; i++)
+            foreach (var cell in this.Board.Cells.Cast<T>())
             {
-                for (int j = 0; j < this.ColumnCount; j++)
-                {
-                    this.cells.Add(generate(j, i));
-                }
+                this.cells.Add(cell);
             }
+            this.RaisePropertyChanged(nameof(this.Generation));
             this.OnInitialized(EventArgs.Empty);
+        }
+        /// <summary>
+        /// 盤を編集する
+        /// </summary>
+        /// <param name="editAction"></param>
+        public virtual void Edit(Action editAction)
+        {
+            this.Board.Edit(editAction);
+            this.OnCellLifeChanged(EventArgs.Empty);
         }
         /// <summary>
         /// 盤を初期化する
@@ -99,9 +111,9 @@ namespace GameOfLife
         /// <typeparam name="T"></typeparam>
         /// <param name="size">行列数(0以下であれば1に矯正する)</param>
         /// <param name="generate">X,Y座標を引数に<typeparamref name="T"/>型のセルを生成するデリゲート</param>
-        public void Initialize<T>(int size, Func<int, int, T> generate) where T : ICell
+        public void Initialize<T>(int size, Func<int, int, T> generate) where T : IBindableCell
         {
-            this.Initialize<T>(size, size, generate);
+            this.Initialize(size, size, generate);
         }
         /// <summary>
         /// 各セルの生死をランダムに変化させる
@@ -109,10 +121,8 @@ namespace GameOfLife
         /// <param name="survivalRate">生存率(省略可)</param>
         public virtual void Random(int survivalRate = 50)
         {
-            if (!this.Cells.Any()) return;
-            var random = new Random();
-            this.cells.ForEach(cell => cell.IsAlive = random.Next(0, 100) < survivalRate);
-            this.Generation = 0;
+            this.Board.Random(survivalRate);
+            this.RaisePropertyChanged(nameof(this.Generation));
             this.OnCellLifeChanged(EventArgs.Empty);
         }
         /// <summary>
@@ -120,20 +130,15 @@ namespace GameOfLife
         /// </summary>
         public virtual void Reverse()
         {
-            if (!this.Cells.Any()) return;
-            this.cells.ForEach(cell => cell.IsAlive = !cell.IsAlive);
-            this.OnCellLifeChanged(EventArgs.Empty);
+            this.Board.Reverse();
         }
         /// <summary>
         /// 次の世代へ進める
         /// </summary>
         public virtual void Next()
         {
-            if (!this.Cells.Any()) return;
-            var parallel = this.cells.AsParallel();
-            parallel.ForAll(cell => cell.Prediction(this.GetAdjacentCells(cell)));
-            parallel.ForAll(cell => cell.Next());
-            this.Generation++;
+            this.Board.Next();
+            this.RaisePropertyChanged(nameof(this.Generation));
             this.OnNextRaise(EventArgs.Empty);
         }
         /// <summary>
@@ -143,43 +148,15 @@ namespace GameOfLife
         /// <returns></returns>
         public virtual IEnumerable<ICell> GetAdjacentCells(ICell cell)
         {
-            //軽量化のためWhereを使わないで実装
-            var index = cell.X + (this.ColumnCount * cell.Y);
-            var col = this.ColumnCount - 1;
-            var row = this.RowCount - 1;
-            //左上
-            if (0 < cell.Y && 0 < cell.X) yield return this.cells[index - this.ColumnCount - 1];
-            //上
-            if (0 < cell.Y) yield return this.cells[index - this.ColumnCount];
-            //右上
-            if (0 < cell.Y && cell.X < col) yield return this.cells[index - this.ColumnCount + 1];
-            //左
-            if (0 < cell.X) yield return this.Cells[index - 1];
-            //右
-            if (cell.X < col) yield return this.Cells[index + 1];
-            //左下
-            if (cell.Y < row && 0 < cell.X) yield return this.cells[index + this.ColumnCount - 1];
-            //下
-            if (cell.Y < row) yield return this.cells[index + this.ColumnCount];
-            //右下
-            if (cell.Y < row && cell.X < col) yield return this.cells[index + this.ColumnCount + 1];
-        }
-        /// <summary>
-        /// 盤を編集する
-        /// </summary>
-        /// <param name="editAction"></param>
-        public virtual void Edit(Action editAction)
-        {
-            editAction();
-            this.OnCellLifeChanged(EventArgs.Empty);
+            return this.Board.GetAdjacentCells(cell);
         }
         /// <summary>
         /// 盤の状態をリセットする
         /// </summary>
         public virtual void Reset()
         {
-            this.cells.ForEach(cell => cell.IsAlive = false);
-            this.Generation = 0;
+            this.Board.Reset();
+            this.RaisePropertyChanged(nameof(this.Generation));
             this.OnCellLifeChanged(EventArgs.Empty);
         }
         /// <summary>
@@ -189,16 +166,9 @@ namespace GameOfLife
         /// <param name="deadChar">死滅セルとして表示する文字</param>
         /// <param name="separator">セル間に挿入する文字列</param>
         /// <returns></returns>
-        public virtual string ToString(char aliveChar = '0', char deadChar = '-', string separator = " ")
+        public string ToString(char aliveChar = '0', char deadChar = '-', string separator = " ")
         {
-            if (!this.Cells.Any()) return "Uninitialized";
-            var conv = this.cells.Select(cell => cell.IsAlive ? aliveChar : deadChar);
-            var builder = new StringBuilder();
-            for (int i = 0; i < this.RowCount; i++)
-            {
-                builder.AppendLine(string.Join(separator, conv.Skip(i * this.ColumnCount).Take(this.ColumnCount)));
-            }
-            return builder.ToString();
+            return this.Board.ToString(aliveChar, deadChar, separator);
         }
         /// <summary>
         /// <see cref="Initialized"/>イベントを発火する
@@ -224,5 +194,10 @@ namespace GameOfLife
         {
             this.NextRise?.Invoke(this, e);
         }
+        #region IBoardインターフェイス実装の隠蔽
+        IReadOnlyList<ICell> IBoard.Cells => this.Board.Cells;
+        void IBoard.Initialize<T>(int columnCount, int rowCount, Func<int, int, T> generate) => this.Board.Initialize(columnCount, rowCount, generate);
+        void IBoard.Initialize<T>(int size, Func<int, int, T> generate) => this.Board.Initialize(size, generate);
+        #endregion
     }
 }

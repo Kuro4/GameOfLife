@@ -1,4 +1,5 @@
-﻿using GameOfLife.WPF.Views;
+﻿using GameOfLife.WPF.BoardModule;
+using GameOfLife.WPF.Views;
 using Prism.Ioc;
 using Prism.Modularity;
 using System.Windows;
@@ -19,5 +20,11 @@ namespace GameOfLife.WPF
         {
 
         }
+
+        protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
+        {
+            moduleCatalog.AddModule<BoardModule.BoardModule>();
+        }
     }
 }
+//TODO:OpenTKを導入して爆速の実装を目指す

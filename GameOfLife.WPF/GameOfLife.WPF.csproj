@@ -94,6 +94,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="OpenTK">
+      <Version>3.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="OpenTK.GLControl">
+      <Version>3.0.1</Version>
+    </PackageReference>
     <PackageReference Include="Prism.Core">
       <Version>7.1.0.431</Version>
     </PackageReference>
@@ -106,6 +112,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GameOfLife.Core\GameOfLife.Core.csproj">
+      <Project>{91d732a8-04ca-4a68-a14b-28324bc6af41}</Project>
+      <Name>GameOfLife.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GameOfLife.Library\GameOfLife.Library.csproj">
       <Project>{11d5334b-cdca-450c-a9d0-9006a5c1efc8}</Project>
       <Name>GameOfLife.Library</Name>
@@ -114,6 +124,15 @@
       <Project>{5792bce6-6298-468b-8504-0a9c331ba03c}</Project>
       <Name>GameOfLife.WPF.BoardModule</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GameOfLife.WPF.Controls\GameOfLife.WPF.Controls.csproj">
+      <Project>{f1ea48f2-ae93-46fa-a2e7-bd81311eda4f}</Project>
+      <Name>GameOfLife.WPF.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GameOfLife.WPF.Core\GameOfLife.WPF.Core.csproj">
+      <Project>{C6079BCD-141A-41DB-86D0-41DE98D87B41}</Project>
+      <Name>GameOfLife.WPF.Core</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
