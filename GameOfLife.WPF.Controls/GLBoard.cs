@@ -180,7 +180,7 @@ namespace GameOfLife.WPF.Controls
             {   
                 //Y座標は反転させる
                 this.vec2[i] = new Vector2((cell.X + 1) * this.glControl.AspectRatio, (cell.Y * -1) - 1);
-                this.col4[i] = cell.IsAlive ? Color4.White : Color4.Black;
+                this.col4[i] = cell.IsAlive ? Color4.White : Color4.Gray;
             }
             //ポイントデータを流す
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbos[0]);

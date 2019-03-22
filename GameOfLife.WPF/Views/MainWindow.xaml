@@ -1,18 +1,31 @@
-﻿<metro:MetroWindow x:Class="GameOfLife.WPF.Views.MainWindow"
-                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<metro:MetroWindow xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                    xmlns:prism="http://prismlibrary.com/"
+                   xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+                   xmlns:Converters="clr-namespace:GameOfLife.WPF.Converters"
+                   x:Class="GameOfLife.WPF.Views.MainWindow"
                    prism:ViewModelLocator.AutoWireViewModel="True"
+                   xmlns:sys="clr-namespace:System;assembly=mscorlib"
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                    xmlns:vm="clr-namespace:GameOfLife.WPF.ViewModels"
-                   xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
                    mc:Ignorable="d"
                    d:DataContext="{d:DesignInstance {x:Type vm:MainWindowViewModel}}"
+                   xmlns:m="clr-namespace:GameOfLife.Core.Models;assembly=GameOfLife.Core"
                    Title="{Binding Title}"
                    SaveWindowPosition="True"
                    Height="450"
                    Width="625">
+    <metro:MetroWindow.Resources>
+        <Converters:BoolToEnumConverter x:Key="BoolToEnumConverter"/>
+        <ObjectDataProvider x:Key="Pattern"
+                            MethodName="GetValues" 
+                            ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="m:Pattern"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </metro:MetroWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -39,8 +52,10 @@
                             BorderThickness="1">
                         <UniformGrid Columns="2"
                                      Margin="10">
-                            <RadioButton Content="Pure WPF"/>
-                            <RadioButton Content="OpenTK"/>
+                            <RadioButton Content="Pure WPF"
+                                         IsChecked="{Binding SelectedBoardType.Value, ConverterParameter=PureWPF, Converter={StaticResource BoolToEnumConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <RadioButton Content="OpenTK"
+                                         IsChecked="{Binding SelectedBoardType.Value, ConverterParameter=OpenTK, Converter={StaticResource BoolToEnumConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         </UniformGrid>
                     </Border>
                     <TextBlock Text="Control"
@@ -52,13 +67,13 @@
                                 <metro:NumericUpDown metro:TextBoxHelper.Watermark="Colmns"
                                                      metro:TextBoxHelper.UseFloatingWatermark="True"
                                                      HorizontalContentAlignment="Center"
-                                                     Value="10"
+                                                     Value="{Binding Columns.Value}"
                                                      Minimum="1"
                                                      Maximum="1000"/>
                                 <metro:NumericUpDown metro:TextBoxHelper.Watermark="Rows"
                                                      metro:TextBoxHelper.UseFloatingWatermark="True"
                                                      HorizontalContentAlignment="Center"
-                                                     Value="10"
+                                                     Value="{Binding Rows.Value}"
                                                      Minimum="1"
                                                      Maximum="1000"/>
                             </UniformGrid>
@@ -69,16 +84,21 @@
                                     <ColumnDefinition/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <ComboBox/>
+                                <ComboBox ItemsSource="{Binding Mode=OneWay, Source={StaticResource Pattern}}"
+                                          SelectedItem="{Binding SelectedPattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                 <Button Grid.Column="1"
-                                        Content="Edit"/>
+                                        Content="Edit"
+                                        Command="{Binding Edit}"
+                                        CommandParameter="{Binding SelectedPattern.Value}"/>
                             </Grid>
                             <Button Margin="0,5,0,0"
-                                    Content="Start/Stop"/>
+                                    Content="{Binding StartStopLabel.Value}"
+                                    Command="{Binding SwitchStartStop}"/>
                             <Button Margin="0,5,0,0"
-                                    Content="Next"/>
+                                    Content="Next"
+                                    Command="{Binding Next}"/>
                             <TextBlock Margin="0,5,0,0"
-                                       Text="{Binding Value, ElementName=Interval, StringFormat=Interval:{0}ms}"/>
+                                       Text="{Binding Value, ElementName=Interval, StringFormat=Interval:\{0\}ms}"/>
                             <Slider x:Name="Interval"
                                     Value="10"
                                     Minimum="1"
@@ -97,7 +117,7 @@
                             prism:RegionManager.RegionName="ContentRegion"/>
         </Grid>
         <StatusBar Grid.Row="3">
-            <TextBlock Text="{Binding Board.Generation, StringFormat=第{0}世代}"/>
+            <!--<TextBlock Text="{Binding Board.Generation, StringFormat=第\{0\}世代}"/>-->
         </StatusBar>
     </Grid>
 </metro:MetroWindow>

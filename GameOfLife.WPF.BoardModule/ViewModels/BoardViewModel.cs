@@ -3,6 +3,7 @@ using GameOfLife.WPF.Core.EventAggregators;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
+using Prism.Regions;
 using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,8 @@ using Unity.Attributes;
 
 namespace GameOfLife.WPF.BoardModule.ViewModels
 {
-    public class BoardViewModel : BindableBase
+    [RegionMemberLifetime(KeepAlive = false)]
+    public class BoardViewModel : BindableBase, INavigationAware
     {
         private readonly IEventAggregator eventAggregator;
 
@@ -28,13 +30,37 @@ namespace GameOfLife.WPF.BoardModule.ViewModels
             this.eventAggregator = eventAggregator;
             this.ColumnCount = this.columnCount.ToReadOnlyReactiveProperty();
             this.RowCount = this.rowCount.ToReadOnlyReactiveProperty();
+            Console.WriteLine("BoardViewModel");
+        }
 
-            this.eventAggregator.GetEvent<BoardInitializedEvent>().Subscribe(board =>
-            {
-                this.columnCount.Value = board.ColumnCount;
-                this.rowCount.Value = board.RowCount;
-                this.Cells.Value = board.Cells;
-            },ThreadOption.PublisherThread);
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            Console.WriteLine("OnNavigatedTo");
+            var board = navigationContext.Parameters["board"] as IBindableBoard;
+            this.columnCount.Value = board.ColumnCount;
+            this.rowCount.Value = board.RowCount;
+            this.Cells.Value = board.Cells;
+            this.eventAggregator.GetEvent<BoardInitializedEvent>().Subscribe(this.ApplyBoard);
+        }
+
+        public bool IsNavigationTarget(NavigationContext navigationContext)
+        {
+            Console.WriteLine("IsNavigationTarget");
+            return true;
+        }
+
+        public void OnNavigatedFrom(NavigationContext navigationContext)
+        {
+            Console.WriteLine("OnNavigatedFrom");
+            this.eventAggregator.GetEvent<BoardInitializedEvent>().Unsubscribe(this.ApplyBoard);
+        }
+
+        private void ApplyBoard(IBindableBoard board)
+        {
+            this.columnCount.Value = board.ColumnCount;
+            this.rowCount.Value = board.RowCount;
+            this.Cells.Value = board.Cells;
+            Console.WriteLine("BoardViewModelSubscribe");
         }
     }
 }

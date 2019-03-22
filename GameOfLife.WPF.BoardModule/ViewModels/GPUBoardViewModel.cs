@@ -3,6 +3,7 @@ using GameOfLife.WPF.Core.EventAggregators;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
+using Prism.Regions;
 using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,7 @@ namespace GameOfLife.WPF.BoardModule.ViewModels
             {
                 this.Board.Value = board;
             }, ThreadOption.PublisherThread);
+            Console.WriteLine("GPUBoardViewModel");
         }
     }
 }
