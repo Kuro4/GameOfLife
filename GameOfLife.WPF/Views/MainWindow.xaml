@@ -1,16 +1,18 @@
-﻿<Window x:Class="GameOfLife.WPF.Views.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:prism="http://prismlibrary.com/"
-        prism:ViewModelLocator.AutoWireViewModel="True"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="clr-namespace:GameOfLife.WPF.ViewModels"
-        mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance {x:Type vm:MainWindowViewModel}}"
-        Title="{Binding Title}"
-        Height="350"
-        Width="525">
+﻿<metro:MetroWindow x:Class="GameOfLife.WPF.Views.MainWindow"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:prism="http://prismlibrary.com/"
+                   prism:ViewModelLocator.AutoWireViewModel="True"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:vm="clr-namespace:GameOfLife.WPF.ViewModels"
+                   xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+                   mc:Ignorable="d"
+                   d:DataContext="{d:DesignInstance {x:Type vm:MainWindowViewModel}}"
+                   Title="{Binding Title}"
+                   SaveWindowPosition="True"
+                   Height="450"
+                   Width="625">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -23,25 +25,79 @@
                 <MenuItem Header="MenuItem"/>
             </MenuItem>
         </Menu>
-        <!--こいつのサイズを固定したほうが軽くなる-->
-        <ContentControl x:Name="ContentPanel"
-                        Grid.Row="1"
-                        prism:RegionManager.RegionName="ContentRegion"/>
-        <Grid x:Name="ControlPanel"
-              Grid.Row="2">
-            <WrapPanel>
-                <TextBox Width="50" Text="{Binding Size.Value}"/>
-                <Button Content="初期化" Command="{Binding Initialize}"/>
-                <Button Content="ランダム" Margin="30,0,0,0" Command="{Binding Random}"/>
-                <Button Content="スタート" Margin="30,0,0,0" Command="{Binding Start}"/>
-                <Button Content="ストップ" Margin="30,0,0,0" Command="{Binding Stop}"/>
-                <Button Content="次へ" Margin="30,0,0,0" Command="{Binding Next}"/>
-                <Button Content="リセット" Margin="30,0,0,0" Command="{Binding Reset}"/>
-                <TextBox Text="{Binding FPS.Value}"/>
-            </WrapPanel>
+        <Grid x:Name="ContentPanel"
+              Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+            <ScrollViewer Margin="5">
+                <StackPanel x:Name="ControlPanel"
+                            Margin="5">
+                    <TextBlock Text="Board Type"/>
+                    <Border BorderBrush="Gray"
+                            BorderThickness="1">
+                        <UniformGrid Columns="2"
+                                     Margin="10">
+                            <RadioButton Content="Pure WPF"/>
+                            <RadioButton Content="OpenTK"/>
+                        </UniformGrid>
+                    </Border>
+                    <TextBlock Text="Control"
+                               Margin="0,10,0,0"/>
+                    <Border BorderBrush="Gray"
+                            BorderThickness="1">
+                        <StackPanel Margin="10">
+                            <UniformGrid Rows="1">
+                                <metro:NumericUpDown metro:TextBoxHelper.Watermark="Colmns"
+                                                     metro:TextBoxHelper.UseFloatingWatermark="True"
+                                                     HorizontalContentAlignment="Center"
+                                                     Value="10"
+                                                     Minimum="1"
+                                                     Maximum="1000"/>
+                                <metro:NumericUpDown metro:TextBoxHelper.Watermark="Rows"
+                                                     metro:TextBoxHelper.UseFloatingWatermark="True"
+                                                     HorizontalContentAlignment="Center"
+                                                     Value="10"
+                                                     Minimum="1"
+                                                     Maximum="1000"/>
+                            </UniformGrid>
+                            <Button Content="Initialize"
+                                    Command="{Binding Initialize}"/>
+                            <Grid Margin="0,5,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ComboBox/>
+                                <Button Grid.Column="1"
+                                        Content="Edit"/>
+                            </Grid>
+                            <Button Margin="0,5,0,0"
+                                    Content="Start/Stop"/>
+                            <Button Margin="0,5,0,0"
+                                    Content="Next"/>
+                            <TextBlock Margin="0,5,0,0"
+                                       Text="{Binding Value, ElementName=Interval, StringFormat=Interval:{0}ms}"/>
+                            <Slider x:Name="Interval"
+                                    Value="10"
+                                    Minimum="1"
+                                    SmallChange="1"
+                                    LargeChange="10"
+                                    IsSnapToTickEnabled="True"
+                                    IsMoveToPointEnabled="True"
+                                    metro:SliderHelper.EnableMouseWheel="ControlFocused"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+            <!--こいつのサイズを固定したほうが軽くなる-->
+            <ContentControl x:Name="Board"
+                            Grid.Column="1"
+                            prism:RegionManager.RegionName="ContentRegion"/>
         </Grid>
         <StatusBar Grid.Row="3">
             <TextBlock Text="{Binding Board.Generation, StringFormat=第{0}世代}"/>
         </StatusBar>
     </Grid>
-</Window>
+</metro:MetroWindow>
