@@ -19,7 +19,7 @@ namespace GameOfLife.WPF.ViewModels
 {
     public class MainWindowViewModel : BindableBase, IDisposable
     {
-        private string _title = "Prism Application";
+        private string _title = "Game Of Life";
         public string Title
         {
             get { return _title; }
@@ -28,7 +28,7 @@ namespace GameOfLife.WPF.ViewModels
 
         public ReactiveProperty<int> Size { get; private set; } = new ReactiveProperty<int>(10);
         public ReactiveProperty<bool> IsStarting { get; private set; } = new ReactiveProperty<bool>(false);
-        public ReactiveProperty<int> FPS { get; private set; } = new ReactiveProperty<int>(60);
+        public ReactiveProperty<int> Interval { get; private set; } = new ReactiveProperty<int>(50);
 
         public ReactiveProperty<int> Columns { get; } = new ReactiveProperty<int>(10);
         public ReactiveProperty<int> Rows { get; } = new ReactiveProperty<int>(10);
@@ -37,6 +37,8 @@ namespace GameOfLife.WPF.ViewModels
         public ReactiveProperty<bool> IsTorus { get; private set; }
         public ReactiveProperty<Pattern> SelectedPattern { get; private set; } = new ReactiveProperty<Pattern>(Pattern.Random);
         public ReactiveProperty<int> Generation { get; private set; } = new ReactiveProperty<int>();
+        public ReactiveProperty<int> SurvivalRate { get; } = new ReactiveProperty<int>(20);
+        public ReactiveProperty<int> Span { get; } = new ReactiveProperty<int>(1);
 
         public ReactiveCommand Initialize { get; private set; } = new ReactiveCommand();
 
@@ -46,7 +48,7 @@ namespace GameOfLife.WPF.ViewModels
         public ReactiveCommand Start { get; private set; } = new ReactiveCommand();
         public ReactiveCommand Next { get; private set; } = new ReactiveCommand();
 
-        private BindableTorusableBoard Board { get; } = new BindableTorusableBoard(true);
+        private BindableTorusableBoard Board { get; } = new BindableTorusableBoard(false);
         private CompositeDisposable Disposable { get; } = new CompositeDisposable();
         private readonly IRegionManager regionManager;
         private readonly IEventAggregator eventAggregator;
@@ -56,8 +58,7 @@ namespace GameOfLife.WPF.ViewModels
             this.regionManager = regionManager;
             this.eventAggregator = eventAggregator;
             //BindableTorusableBoardのプロパティと接続
-            this.IsTorus = this.Board.ObserveProperty(x => x.IsTorus)
-                .ToReactiveProperty()
+            this.IsTorus = this.Board.ToReactivePropertyAsSynchronized(x => x.IsTorus)
                 .AddTo(this.Disposable);
             this.Generation = this.Board.ObserveProperty(x => x.Generation)
                 .ToReactiveProperty()
@@ -73,7 +74,6 @@ namespace GameOfLife.WPF.ViewModels
             {
                 this.Board.Initialize(this.Columns.Value, this.Rows.Value, (x, y) => new BindableCell(x, y));
                 this.Edit.Execute(this.SelectedPattern.Value);
-                //this.ChangeBoardType(BoardType.PureWPF);
                 this.eventAggregator.GetEvent<BoardInitializedEvent>().Publish(this.Board);
             });
 
@@ -86,7 +86,7 @@ namespace GameOfLife.WPF.ViewModels
                 while (this.IsStarting.Value)
                 {
                     this.Board.Next();
-                    await Task.Delay(this.FPS.Value);
+                    await Task.Delay(this.Interval.Value);
                 }
             });
 
@@ -96,7 +96,7 @@ namespace GameOfLife.WPF.ViewModels
                 switch (x)
                 {
                     case Pattern.Random:
-                        this.Board.Random(20);
+                        this.Board.Random(SurvivalRate.Value);
                         break;
                     case Pattern.HorizontalCenterLine:
                         this.Board.WriteHorizontalCenterLine();
@@ -108,13 +108,13 @@ namespace GameOfLife.WPF.ViewModels
                         this.Board.WriteCross();
                         break;
                     case Pattern.HorizontalStripe:
-                        this.Board.WriteHorizontalStripe(this.Board.RowCount / 50);
+                        this.Board.WriteHorizontalStripe(this.Span.Value);
                         break;
                     case Pattern.VerticalStripe:
-                        this.Board.WriteVerticalStripe(this.Board.ColumnCount / 50);
+                        this.Board.WriteVerticalStripe(this.Span.Value);
                         break;
                     case Pattern.GinghamCheck:
-                        this.Board.WriteGinghamCheck(this.Board.RowCount / 50);
+                        this.Board.WriteGinghamCheck(this.Span.Value);
                         break;
                     default:
                         break;
@@ -143,11 +143,9 @@ namespace GameOfLife.WPF.ViewModels
                     //    return;
                     //}
                     this.regionManager.RequestNavigate("ContentRegion", nameof(BoardModule.Views.Board), param);
-                    this.eventAggregator.GetEvent<BoardInitializedEvent>().Publish(this.Board);
                     break;
                 case BoardType.OpenTK:
                     this.regionManager.RequestNavigate("ContentRegion", nameof(BoardModule.Views.GPUBoard), param);
-                    //this.eventAggregator.GetEvent<BoardInitializedEvent>().Publish(this.Board);
                     break;
                 default:
                     break;

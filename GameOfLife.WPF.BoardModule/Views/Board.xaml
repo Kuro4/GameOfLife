@@ -15,7 +15,7 @@
              xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options">
     <UserControl.Resources>
         <SolidColorBrush x:Key="AliveBrush" po:Freeze="True" Color="White"/>
-        <SolidColorBrush x:Key="DeadBrush" po:Freeze="True" Color="Black"/>
+        <SolidColorBrush x:Key="DeadBrush" po:Freeze="True" Color="Gray"/>
     </UserControl.Resources>
     <ItemsControl ItemsSource="{Binding Cells.Value}"
                   IsHitTestVisible="False">

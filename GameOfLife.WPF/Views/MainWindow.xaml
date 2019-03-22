@@ -33,11 +33,11 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Menu>
+        <!--<Menu>
             <MenuItem Header="MenuItem">
                 <MenuItem Header="MenuItem"/>
             </MenuItem>
-        </Menu>
+        </Menu>-->
         <Grid x:Name="ContentPanel"
               Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -79,7 +79,16 @@
                             </UniformGrid>
                             <Button Content="Initialize"
                                     Command="{Binding Initialize}"/>
-                            <Grid Margin="0,5,0,0">
+                            <CheckBox Margin="0,5,0,0"
+                                      Content="IsTorus"
+                                      IsChecked="{Binding IsTorus.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <metro:NumericUpDown Margin="0,5,0,0"
+                                                 metro:TextBoxHelper.Watermark="Span"
+                                                 metro:TextBoxHelper.UseFloatingWatermark="True"
+                                                 HorizontalContentAlignment="Center"
+                                                 Value="{Binding Span.Value}"
+                                                 Minimum="1"/>
+                            <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
                                     <ColumnDefinition Width="Auto"/>
@@ -100,7 +109,7 @@
                             <TextBlock Margin="0,5,0,0"
                                        Text="{Binding Value, ElementName=Interval, StringFormat=Interval:\{0\}ms}"/>
                             <Slider x:Name="Interval"
-                                    Value="10"
+                                    Value="{Binding Interval.Value}"
                                     Minimum="1"
                                     SmallChange="1"
                                     LargeChange="10"
@@ -117,7 +126,7 @@
                             prism:RegionManager.RegionName="ContentRegion"/>
         </Grid>
         <StatusBar Grid.Row="3">
-            <!--<TextBlock Text="{Binding Board.Generation, StringFormat=第\{0\}世代}"/>-->
+            <TextBlock Text="{Binding Generation.Value, StringFormat=第\{0\}世代}"/>
         </StatusBar>
     </Grid>
 </metro:MetroWindow>

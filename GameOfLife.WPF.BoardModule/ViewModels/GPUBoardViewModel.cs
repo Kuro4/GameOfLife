@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace GameOfLife.WPF.BoardModule.ViewModels
 {
-    public class GPUBoardViewModel : BindableBase
+    public class GPUBoardViewModel : BindableBase, INavigationAware
     {
         public ReactiveProperty<IBindableBoard> Board { get; private set; } = new ReactiveProperty<IBindableBoard>();
         private readonly IEventAggregator eventAggregator;
@@ -25,6 +25,29 @@ namespace GameOfLife.WPF.BoardModule.ViewModels
                 this.Board.Value = board;
             }, ThreadOption.PublisherThread);
             Console.WriteLine("GPUBoardViewModel");
+        }
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            var board = navigationContext.Parameters["board"] as IBindableBoard;
+            this.ApplyBoard(board);
+            this.eventAggregator.GetEvent<BoardInitializedEvent>().Subscribe(this.ApplyBoard);
+        }
+
+        public bool IsNavigationTarget(NavigationContext navigationContext)
+        {
+            return true;
+        }
+
+        public void OnNavigatedFrom(NavigationContext navigationContext)
+        {
+            this.eventAggregator.GetEvent<BoardInitializedEvent>().Unsubscribe(this.ApplyBoard);
+        }
+
+        private void ApplyBoard(IBindableBoard board)
+        {
+            if (board is null) return;
+            this.Board.Value = board;
         }
     }
 }

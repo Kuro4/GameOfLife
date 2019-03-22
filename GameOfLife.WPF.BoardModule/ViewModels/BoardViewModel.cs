@@ -1,15 +1,10 @@
 ﻿using GameOfLife.Core.Models;
 using GameOfLife.WPF.Core.EventAggregators;
-using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
 using Reactive.Bindings;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using Unity.Attributes;
 
 namespace GameOfLife.WPF.BoardModule.ViewModels
 {
@@ -30,37 +25,34 @@ namespace GameOfLife.WPF.BoardModule.ViewModels
             this.eventAggregator = eventAggregator;
             this.ColumnCount = this.columnCount.ToReadOnlyReactiveProperty();
             this.RowCount = this.rowCount.ToReadOnlyReactiveProperty();
-            Console.WriteLine("BoardViewModel");
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            Console.WriteLine("OnNavigatedTo");
             var board = navigationContext.Parameters["board"] as IBindableBoard;
-            this.columnCount.Value = board.ColumnCount;
-            this.rowCount.Value = board.RowCount;
-            this.Cells.Value = board.Cells;
+            this.ApplyBoard(board);
             this.eventAggregator.GetEvent<BoardInitializedEvent>().Subscribe(this.ApplyBoard);
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
-            Console.WriteLine("IsNavigationTarget");
             return true;
         }
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
-            Console.WriteLine("OnNavigatedFrom");
             this.eventAggregator.GetEvent<BoardInitializedEvent>().Unsubscribe(this.ApplyBoard);
+            this.Cells.Value = null;
+            this.columnCount.Value = 0;
+            this.rowCount.Value = 0;
         }
 
         private void ApplyBoard(IBindableBoard board)
         {
+            if (board is null) return;
             this.columnCount.Value = board.ColumnCount;
             this.rowCount.Value = board.RowCount;
             this.Cells.Value = board.Cells;
-            Console.WriteLine("BoardViewModelSubscribe");
         }
     }
 }

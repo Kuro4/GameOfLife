@@ -37,7 +37,7 @@ namespace GameOfLife.WPF.Controls
                 newBoard.CellLifeChanged += self.Board_CellLifeChanged;
                 newBoard.NextRise += self.Board_NextRise;
             }
-            self.SetProjection();
+            if (self.IsLoaded) self.SetProjection();
         }
 
         private void Board_Initialized(object sender, EventArgs e)
@@ -95,7 +95,7 @@ namespace GameOfLife.WPF.Controls
             //描画領域の設定
             GL.Viewport(this.glControl.Size);
             //背景色の設定
-            GL.ClearColor(Color4.Black);
+            GL.ClearColor(Color4.Gray);
             //各Arrayを有効化
             GL.EnableClientState(ArrayCap.VertexArray);
             GL.EnableClientState(ArrayCap.ColorArray);
@@ -105,7 +105,7 @@ namespace GameOfLife.WPF.Controls
             this.glControl.Resize += this.GlControl_Resize;
             this.glControl.Paint += this.GlControl_Paint;
             //描画
-            this.RenderBoard();
+            this.SetProjection();
         }
 
         private void GlHost_Unloaded(object sender, RoutedEventArgs e)
@@ -151,6 +151,7 @@ namespace GameOfLife.WPF.Controls
 
         private void SetProjection()
         {
+            if (!this.IsVisible) return;
             //視点設定
             GL.MatrixMode(MatrixMode.Modelview);
             var col = ((this.Board.ColumnCount + 1) / 2F) * this.glControl.AspectRatio;
